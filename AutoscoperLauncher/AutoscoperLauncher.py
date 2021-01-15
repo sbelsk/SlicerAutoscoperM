@@ -17,9 +17,9 @@ class AutoscoperLauncher(ScriptedLoadableModule):
   def __init__(self, parent):
     ScriptedLoadableModule.__init__(self, parent)
     self.parent.title = "AutoscoperLauncher"  # TODO: make this more human readable by adding spaces
-    self.parent.categories = ["Examples"]  # TODO: set categories (folders where the module shows up in the module selector)
+    self.parent.categories = ["Tracking"]  # TODO: set categories (folders where the module shows up in the module selector)
     self.parent.dependencies = []  # TODO: add here list of module names that this module requires
-    self.parent.contributors = ["John Doe (AnyWare Corp.)"]  # TODO: replace with "Firstname Lastname (Organization)"
+    self.parent.contributors = ["Bardiya Akhbari (Brown University)"]  # TODO: replace with "Firstname Lastname (Organization)"
     # TODO: update with short description of the module and a link to online module documentation
     self.parent.helpText = """
 This is an example of scripted loadable module bundled in an extension.
@@ -133,7 +133,7 @@ class AutoscoperLauncherWidget(ScriptedLoadableModuleWidget, VTKObservationMixin
     # (in the selected parameter node).
     self.ui.inputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUI)
     self.ui.outputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUI)
-    self.ui.imageThresholdSliderWidget.connect("valueChanged(double)", self.updateParameterNodeFromGUI)
+    #self.ui.imageThresholdSliderWidget.connect("valueChanged(double)", self.updateParameterNodeFromGUI)
     self.ui.invertOutputCheckBox.connect("toggled(bool)", self.updateParameterNodeFromGUI)
     self.ui.invertedOutputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUI)
 
@@ -230,7 +230,7 @@ class AutoscoperLauncherWidget(ScriptedLoadableModuleWidget, VTKObservationMixin
     self.ui.inputSelector.setCurrentNode(self._parameterNode.GetNodeReference("InputVolume"))
     self.ui.outputSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputVolume"))
     self.ui.invertedOutputSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputVolumeInverse"))
-    self.ui.imageThresholdSliderWidget.value = float(self._parameterNode.GetParameter("Threshold"))
+    #self.ui.imageThresholdSliderWidget.value = float(self._parameterNode.GetParameter("Threshold"))
     self.ui.invertOutputCheckBox.checked = (self._parameterNode.GetParameter("Invert") == "true")
 
     # Update buttons states and tooltips
@@ -239,7 +239,7 @@ class AutoscoperLauncherWidget(ScriptedLoadableModuleWidget, VTKObservationMixin
       self.ui.applyButton.enabled = True
     else:
       self.ui.applyButton.toolTip = "Select input and output volume nodes"
-      self.ui.applyButton.enabled = False
+      self.ui.applyButton.enabled = True #False
 
     # All the GUI updates are done
     self._updatingGUIFromParameterNode = False
@@ -257,7 +257,7 @@ class AutoscoperLauncherWidget(ScriptedLoadableModuleWidget, VTKObservationMixin
 
     self._parameterNode.SetNodeReferenceID("InputVolume", self.ui.inputSelector.currentNodeID)
     self._parameterNode.SetNodeReferenceID("OutputVolume", self.ui.outputSelector.currentNodeID)
-    self._parameterNode.SetParameter("Threshold", str(self.ui.imageThresholdSliderWidget.value))
+    #self._parameterNode.SetParameter("Threshold", str(self.ui.imageThresholdSliderWidget.value))
     self._parameterNode.SetParameter("Invert", "true" if self.ui.invertOutputCheckBox.checked else "false")
     self._parameterNode.SetNodeReferenceID("OutputVolumeInverse", self.ui.invertedOutputSelector.currentNodeID)
 
@@ -268,16 +268,20 @@ class AutoscoperLauncherWidget(ScriptedLoadableModuleWidget, VTKObservationMixin
     Run processing when user clicks "Apply" button.
     """
     try:
+	
+      import subprocess
+      subprocess.call(["C:\\Dev\\Autoscoper-v2.7\\build\\install\\bin\\Release\\autoscoper.exe"])
+      #os.system('"C:\Dev\Autoscoper-v2.7\build\install\bin\Release\autoscoper.exe"')
 
-      # Compute output
-      self.logic.process(self.ui.inputSelector.currentNode(), self.ui.outputSelector.currentNode(),
-        self.ui.imageThresholdSliderWidget.value, self.ui.invertOutputCheckBox.checked)
+      # # Compute output
+      # self.logic.process(self.ui.inputSelector.currentNode(), self.ui.outputSelector.currentNode(),
+        # self.ui.imageThresholdSliderWidget.value, self.ui.invertOutputCheckBox.checked)
 
-      # Compute inverted output (if needed)
-      if self.ui.invertedOutputSelector.currentNode():
-        # If additional output volume is selected then result with inverted threshold is written there
-        self.logic.process(self.ui.inputSelector.currentNode(), self.ui.invertedOutputSelector.currentNode(),
-          self.ui.imageThresholdSliderWidget.value, not self.ui.invertOutputCheckBox.checked, showResult=False)
+      # # Compute inverted output (if needed)
+      # if self.ui.invertedOutputSelector.currentNode():
+        # # If additional output volume is selected then result with inverted threshold is written there
+        # self.logic.process(self.ui.inputSelector.currentNode(), self.ui.invertedOutputSelector.currentNode(),
+          # self.ui.imageThresholdSliderWidget.value, not self.ui.invertOutputCheckBox.checked, showResult=False)
 
     except Exception as e:
       slicer.util.errorDisplay("Failed to compute results: "+str(e))
@@ -413,3 +417,10 @@ class AutoscoperLauncherTest(ScriptedLoadableModuleTest):
     self.assertEqual(outputScalarRange[1], inputScalarRange[1])
 
     self.delayDisplay('Test passed')
+	
+	
+	
+	
+	
+	
+	
