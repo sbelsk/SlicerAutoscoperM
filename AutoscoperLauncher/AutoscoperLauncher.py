@@ -269,10 +269,16 @@ class AutoscoperLauncherWidget(ScriptedLoadableModuleWidget, VTKObservationMixin
     """
     try:
 	
+	## #USE QPROCESS
       import subprocess
       subprocess.call(["C:\\Dev\\Autoscoper-v2.7\\build\\install\\bin\\Release\\autoscoper.exe"])
-      #os.system('"C:\Dev\Autoscoper-v2.7\build\install\bin\Release\autoscoper.exe"')
 
+	  #config_path = "P:\iTWA_Instrumented_Total_Wrist\Subjects\NORMAL\WN00105\Autoscoper\flx_ext.cfg"
+	  
+	  
+	  
+	  
+	  
       # # Compute output
       # self.logic.process(self.ui.inputSelector.currentNode(), self.ui.outputSelector.currentNode(),
         # self.ui.imageThresholdSliderWidget.value, self.ui.invertOutputCheckBox.checked)
@@ -292,6 +298,8 @@ class AutoscoperLauncherWidget(ScriptedLoadableModuleWidget, VTKObservationMixin
 #
 # AutoscoperLauncherLogic
 #
+
+# add functino to logic (startAutoscoper)...
 
 class AutoscoperLauncherLogic(ScriptedLoadableModuleLogic):
   """This class should implement all the actual
