@@ -17,9 +17,9 @@ class AutoscoperConnect(ScriptedLoadableModule):
   def __init__(self, parent):
     ScriptedLoadableModule.__init__(self, parent)
     self.parent.title = "AutoscoperConnect"  # TODO: make this more human readable by adding spaces
-    self.parent.categories = ["Examples"]  # TODO: set categories (folders where the module shows up in the module selector)
+    self.parent.categories = ["Tracking"]  # TODO: set categories (folders where the module shows up in the module selector)
     self.parent.dependencies = []  # TODO: add here list of module names that this module requires
-    self.parent.contributors = ["John Doe (AnyWare Corp.)"]  # TODO: replace with "Firstname Lastname (Organization)"
+    self.parent.contributors = ["Bardiya Akhbari and Amy M Morton (Brown University)"]  # TODO: replace with "Firstname Lastname (Organization)"
     # TODO: update with short description of the module and a link to online module documentation
     self.parent.helpText = """
 This is an example of scripted loadable module bundled in an extension.
@@ -83,6 +83,10 @@ def registerSampleData():
     nodeNames='AutoscoperConnect2'
   )
 
+####
+import qt
+####
+
 #
 # AutoscoperConnectWidget
 #
@@ -101,6 +105,10 @@ class AutoscoperConnectWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     self.logic = None
     self._parameterNode = None
     self._updatingGUIFromParameterNode = False
+    
+    self.aut_root = "C:\\Dev\Autoscoper-v2.7\\build\\install\\bin\\Release" #self.ui.autoscoperRootPath.currentPath()
+    self.aut_path = self.aut_root + "\\autoscoper.exe"
+    self.aut_pros = qt.QProcess()
 
   def setup(self):
     """
@@ -239,7 +247,7 @@ class AutoscoperConnectWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
       self.ui.applyButton.enabled = True
     else:
       self.ui.applyButton.toolTip = "Select input and output volume nodes"
-      self.ui.applyButton.enabled = False
+      self.ui.applyButton.enabled = True #False
 
     # All the GUI updates are done
     self._updatingGUIFromParameterNode = False
@@ -267,22 +275,25 @@ class AutoscoperConnectWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     """
     Run processing when user clicks "Apply" button.
     """
-    try:
+    # try:
+    os.chdir(self.aut_root)
+    self.aut_pros.start(self.aut_path)
+	#aut_pros = None
+	  
+      # # Compute output
+      # self.logic.process(self.ui.inputSelector.currentNode(), self.ui.outputSelector.currentNode(),
+        # self.ui.imageThresholdSliderWidget.value, self.ui.invertOutputCheckBox.checked)
 
-      # Compute output
-      self.logic.process(self.ui.inputSelector.currentNode(), self.ui.outputSelector.currentNode(),
-        self.ui.imageThresholdSliderWidget.value, self.ui.invertOutputCheckBox.checked)
+      # # Compute inverted output (if needed)
+      # if self.ui.invertedOutputSelector.currentNode():
+        # # If additional output volume is selected then result with inverted threshold is written there
+        # self.logic.process(self.ui.inputSelector.currentNode(), self.ui.invertedOutputSelector.currentNode(),
+          # self.ui.imageThresholdSliderWidget.value, not self.ui.invertOutputCheckBox.checked, showResult=False)
 
-      # Compute inverted output (if needed)
-      if self.ui.invertedOutputSelector.currentNode():
-        # If additional output volume is selected then result with inverted threshold is written there
-        self.logic.process(self.ui.inputSelector.currentNode(), self.ui.invertedOutputSelector.currentNode(),
-          self.ui.imageThresholdSliderWidget.value, not self.ui.invertOutputCheckBox.checked, showResult=False)
-
-    except Exception as e:
-      slicer.util.errorDisplay("Failed to compute results: "+str(e))
-      import traceback
-      traceback.print_exc()
+    # except Exception as e:
+      # slicer.util.errorDisplay("Failed to compute results: "+str(e))
+      # import traceback
+      # traceback.print_exc()
 
 
 #
