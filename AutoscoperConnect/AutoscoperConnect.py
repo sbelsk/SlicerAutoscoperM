@@ -168,6 +168,7 @@ class AutoscoperConnectWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     """
     # Do not react to parameter node changes (GUI wlil be updated when the user enters into the module)
     self.removeObserver(self._parameterNode, vtk.vtkCommand.ModifiedEvent, self.updateGUIFromParameterNode)
+    #self.aut_pros.kill()
 
   def onSceneStartClose(self, caller, event):
     """
@@ -281,10 +282,15 @@ class AutoscoperConnectWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     
     os.chdir(aut_root)
     aut_path = aut_root + "\\autoscoper.exe"
+
     
     if path.exists(aut_path):
         print("loading autoscoper.exe")
-        self.aut_pros.start("cmd /k " + aut_path)
+        
+        # send command
+        self.aut_pros.start("cmd.exe /K " + aut_path)
+        self.aut_pros.waitForStarted()
+        
     else:
         print("autoscoper.exe does not exist")
         
