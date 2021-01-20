@@ -1,4 +1,4 @@
-### CONNECTION 
+### CONNECTION (firs implementation using socket)
 import socket
 from struct import pack
 

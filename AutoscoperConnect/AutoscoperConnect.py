@@ -106,7 +106,7 @@ class AutoscoperConnectWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     self._parameterNode = None
     self._updatingGUIFromParameterNode = False
     
-    self.aut_pros = qt.QProcess()
+    self.aut_process = qt.QProcess()
 
   def setup(self):
     """
@@ -168,7 +168,7 @@ class AutoscoperConnectWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     """
     # Do not react to parameter node changes (GUI wlil be updated when the user enters into the module)
     self.removeObserver(self._parameterNode, vtk.vtkCommand.ModifiedEvent, self.updateGUIFromParameterNode)
-    #self.aut_pros.kill()
+    #self.aut_process.kill()
 
   def onSceneStartClose(self, caller, event):
     """
@@ -281,20 +281,18 @@ class AutoscoperConnectWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     from os import path
     
     os.chdir(aut_root)
-    aut_path = aut_root + "\\autoscoper.exe"
+    autoscoper_executable_path = aut_root + "\\autoscoper.exe"
 
-    
-    if path.exists(aut_path):
+    if path.exists(autoscoper_executable_path):
         print("loading autoscoper.exe")
-        
         # send command
-        self.aut_pros.start("cmd.exe /K " + aut_path)
-        self.aut_pros.waitForStarted()
+        self.aut_process.start("cmd.exe",["/K ", autoscoper_executable_path])
+        self.aut_process.waitForStarted()
         
     else:
         print("autoscoper.exe does not exist")
         
-	#aut_pros = None
+	#aut_process = None
 	  
       # # Compute output
       # self.logic.process(self.ui.inputSelector.currentNode(), self.ui.outputSelector.currentNode(),
