@@ -273,6 +273,25 @@ class AutoscoperConnectWidget(ScriptedLoadableModuleWidget, VTKObservationMixin)
     if slicer.app.os == 'win':
       executablePath = executablePath + ".exe"
     self.logic.startAutoscoper(executablePath)
+    
+    self.sampleDir = os.path.join(self.ui.autoscoperRootPath.directory, "sample_data")
+
+    if self.logic.isAutoscoperOpen == True:
+        # read config file
+        self.readConfigFile()
+
+    
+  def readConfigFile(self):
+      configPath = self.ui.configSelector.currentPath
+      if configPath.endswith == ".cfg":
+          self.logic.loadTrial(configPath)
+      else:
+          configPath = os.path.join(self.sampleDir,"wrist.cfg")
+          self.logic.loadTrial(configPath)
+          
+      print("Loading cfg file: " + configPath)
+      
+      
 
 #
 # AutoscoperConnectLogic
@@ -301,6 +320,7 @@ class AutoscoperConnectLogic(ScriptedLoadableModuleLogic):
     self.StreamFromAutoscoper = qt.QDataStream()
     self.StreamFromAutoscoper.setByteOrder(qt.QSysInfo.ByteOrder)
     self.StreamFromAutoscoper.setDevice(self.TcpSocket)
+    self.isAutoscoperOpen = False
 
   def setDefaultParameters(self, parameterNode):
     """
@@ -321,7 +341,8 @@ class AutoscoperConnectLogic(ScriptedLoadableModuleLogic):
       logging.warning("connection to Autoscoper is in progress")
       return
     self.TcpSocket.connectToHost("127.0.0.1", 30007)
-    self.TcpSocket.waitForConnected(1000)
+    self.TcpSocket.waitForConnected(5000)
+    logging.info("connection to Autoscoper is established")
 
   def disconnectFromAutoscoper(self):
     """Disconnect from a running instance of Autoscoper.
@@ -333,6 +354,7 @@ class AutoscoperConnectLogic(ScriptedLoadableModuleLogic):
       logging.warning("disconnection to Autoscoper is in progress")
       return
     self.TcpSocket.disconnectFromHost()
+    logging.info("Autoscoper is disconnected from 3DSlicer")
 
   def startAutoscoper(self, executablePath):
     """Start Autoscoper executable in a new process
@@ -346,6 +368,8 @@ class AutoscoperConnectLogic(ScriptedLoadableModuleLogic):
     if self.AutoscoperProcess.state() in [qt.QProcess.Starting, qt.QProcess.Running]:
       logging.error("Autoscoper executable already started")
       return
+      
+    self.isAutoscoperOpen = True
 
     @contextlib.contextmanager
     def changeCurrentDir(directory):

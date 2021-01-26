@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>627</width>
+    <width>527</width>
     <height>290</height>
    </rect>
   </property>
@@ -25,7 +25,14 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="ctkPathLineEdit" name="configSelector"/>
+       <widget class="ctkPathLineEdit" name="configSelector">
+        <property name="label">
+         <string/>
+        </property>
+        <property name="currentPath">
+         <string/>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_3">
