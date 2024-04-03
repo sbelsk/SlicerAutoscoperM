@@ -651,15 +651,24 @@ class AutoscoperMWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         vols = glob.glob(os.path.join(mainOutputDir, volumeSubDir, "*.tif"))
         tfms = glob.glob(os.path.join(mainOutputDir, transformSubDir, "*.tfm"))
 
-        if len(vols) != len(tfms):
-            logging.error("Number of volumes and transforms do not match")
-            return
-
         if len(vols) == 0:
             logging.error("No data found")
             return
 
-        for vol, tfm in zip(vols, tfms):
+        # Match the volumes and transforms
+        paired = {}
+        for vol in vols:
+            volName = os.path.basename(vol)
+            for tfm in tfms:
+                tfmName = os.path.basename(tfm)
+                if volName.split(".")[0] == tfmName.split(".")[0]:
+                    paired[vol] = tfm
+                    break
+            if vol not in paired:
+                logging.error(f"No transform found for {vol}")
+                return
+
+        for vol, tfm in paired.items():
             volumeNode = slicer.util.loadVolume(vol)
             transformNode = slicer.util.loadTransform(tfm)
             volumeNode.SetAndObserveTransformNodeID(transformNode.GetID())
@@ -899,11 +908,20 @@ class AutoscoperMLogic(ScriptedLoadableModuleLogic):
             segmentVolume.SetName(segmentName)
             filename = os.path.join(outputDir, volumeSubDir, segmentName + ".tif")
             IO.castVolumeForTIFF(segmentVolume)
+
+            # Remove spacing before writing volume out
+            segmentVolume.DisableModifiedEventOn()
+            originalSpacing = segmentVolume.GetSpacing()
+            segmentVolume.SetSpacing([1.0, 1.0, 1.0])
             IO.writeVolume(segmentVolume, filename)
-            spacing = segmentVolume.GetSpacing()
+            # Restore spacing
+            segmentVolume.SetSpacing(originalSpacing)
+            segmentVolume.DisableModifiedEventOff()
+
             origin = segmentVolume.GetOrigin()
+            spacing = segmentVolume.GetSpacing()
             filename = os.path.join(outputDir, transformSubDir, segmentName + ".tfm")
-            IO.writeTFMFile(filename, [1, 1, spacing[2]], origin)
+            IO.writeTFMFile(filename, spacing, origin)
             self.showVolumeIn3D(segmentVolume)
             # update progress bar
             progressCallback((idx + 1) / numSegments * 100)
