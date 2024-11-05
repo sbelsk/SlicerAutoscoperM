@@ -769,9 +769,22 @@ class AutoscoperMWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
                 return
 
             for i in range(len(vols)):
+                nodeName = os.path.splitext(os.path.basename(vols[i]))[0]
                 volumeNode = slicer.util.loadVolume(vols[i])
-                translationNode = slicer.util.loadTransform(tfms_t[i])
-                scaleNode = slicer.util.loadTransform(tfms_scale[i])
+                translationTransformFileName = os.path.join(mainOutputDir, transformSubDir, f"{nodeName}_t.tfm")
+                scaleTranformFileName = os.path.join(mainOutputDir, transformSubDir, f"{nodeName}_scale.tfm")
+                if not os.path.exists(translationTransformFileName):
+                    raise ValueError(
+                        f"Failed to load partial volume {nodeName}: "
+                        "Corresponding translation transform file {translationTransformFileName} not found"
+                    )
+                if not os.path.exists(scaleTranformFileName):
+                    raise ValueError(
+                        f"Failed to load partial volume {nodeName}: "
+                        "Corresponding scaling transform file {scaleTranformFileName} not found"
+                    )
+                translationNode = slicer.util.loadTransform(translationTransformFileName)
+                scaleNode = slicer.util.loadTransform(scaleTranformFileName)
 
                 volumeNode.SetAndObserveTransformNodeID(scaleNode.GetID())
                 scaleNode.SetAndObserveTransformNodeID(translationNode.GetID())
