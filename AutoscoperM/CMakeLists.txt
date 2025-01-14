@@ -7,6 +7,7 @@ set(MODULE_PYTHON_SCRIPTS
   ${MODULE_NAME}Lib/__init__.py
   ${MODULE_NAME}Lib/IO.py
   ${MODULE_NAME}Lib/SubVolumeExtraction.py
+  ${MODULE_NAME}Lib/Validation.py
   )
 
 set(MODULE_PYTHON_RESOURCES
