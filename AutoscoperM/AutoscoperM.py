@@ -444,6 +444,7 @@ class AutoscoperMWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             mainOutputDir = self.ui.mainOutputSelector.currentPath
             tiffSubDir = self.ui.tiffSubDir.text
             tfmSubDir = self.ui.tfmSubDir.text
+            trackingSubDir = self.ui.trackingSubDir.text
             modelSubDir = self.ui.modelSubDir.text
             segmentationNode = self.ui.pv_SegNodeComboBox.currentNode()
 
@@ -453,6 +454,7 @@ class AutoscoperMWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
                 mainOutputDir=mainOutputDir,
                 volumeSubDir=tiffSubDir,
                 transformSubDir=tfmSubDir,
+                trackingSubDir=trackingSubDir,
                 modelSubDir=modelSubDir,
             )
 
@@ -460,6 +462,7 @@ class AutoscoperMWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
                 mainOutputDir,
                 os.path.join(mainOutputDir, tiffSubDir),
                 os.path.join(mainOutputDir, tfmSubDir),
+                os.path.join(mainOutputDir, trackingSubDir),
                 os.path.join(mainOutputDir, modelSubDir),
             )
             self.ui.progressBar.setValue(0)
